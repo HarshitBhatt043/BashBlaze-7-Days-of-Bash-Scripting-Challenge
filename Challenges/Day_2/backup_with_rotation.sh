@@ -24,9 +24,10 @@ if [ $# -ne 1 ]; then
     echo
     echo "Exiting $0, TRY AGAIN"
     exit 1
+fi
 
 # Check if the specified backup directory exists
-elif [ -d "$backup_dir" ]; then
+if [ -d "$backup_dir" ]; then
     echo "Creating backup folder"
     # Create the backup directory path
     mkdir -p "$backup_path"
@@ -52,6 +53,7 @@ else
         echo "Requirement Check successful, backup directory found -: $backup_path"
         echo
         echo "All Requirements Check Passed"
+        echo
     fi
 fi
 
@@ -59,7 +61,12 @@ fi
 echo "Backing up files"
 echo
 # Copy all files from the specified directory to the backup folder
-cp -r "$backup_dir" "$backup_path"
+rsync -Rr "$backup_dir" "$backup_path"
+# Check exit code for rsync
+if [ $? -eq 0 ]; then
+    echo "Backup completed successfully"
+    echo
+fi
 
 # Check if there are at least three backups in the sorted list
 if [ "${#sorted_list[@]}" -ge 3 ]; then
