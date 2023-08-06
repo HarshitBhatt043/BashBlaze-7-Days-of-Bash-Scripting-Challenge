@@ -1,39 +1,31 @@
 #!/bin/bash
 
-. config_file
-
-dir="$(dirname "$0")"
-process="$1"
-WEBHOOK_URL="YOUR_SLACK_WEBHOOK_URL" # Looks liks 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX'
-Max_Attempts=3
-Sleep=5
+if [ -s "config.txt" ]; then
+    echo "Config file found, Make sure that your are using your own values inside config file"
+    . config.txt
+else
+    echo "Config file not found OR empty, a deffault one will be downloaded...."
+    wget -q "https://github.com/HarshitBhatt043/BashBlaze-7-Days-of-Bash-Scripting-Challenge/blob/monitoring-feature/Solutions/Day_4/config.txt"
+    echo "Default config file downloaded"
+fi
 
 fn_running() {
     if systemctl is-active --quiet "$process"; then
         echo "The process '$process' is running."
     else
         echo "The process '$process' is not running, It will be restarted but you need to give some information below"
-        read -p "Do you want notification if the restarting of process $process failed? Type Y for yes/N for no:" response
+        read -p "Do you want notification if the restarting of process $process failed? Type Y for yes/N for no: " response
         if [ "$response" == "Y" ] || [ "$response" == "y" ]; then
             echo "You have opted in for notification"
-            echo "Checking requirements for notification"
-            if [ -s "$dir/config.txt" ]; then
-                echo "Config file found and is not empty, continuing the process"
-                read -p "Select a mode of notification, Type Y for Email/N for Slack" notification
-                if [ "$notification" == "Y" ] || [ "$notification" == "y" ]; then
-                    read -rsn1 -p "You have chosen EMAIL as a mode for notification. Press any key to continue." email
-                elif [ "$notification" == "N" ] || [ "$notification" == "n" ]; then
-                    read -rsn1 -p "You have chosen SLACK as a mode for notification. Press any key to continue." slack
-                else
-                    echo "Invalid input. Exiting the process."
-                    exit
-                fi
-                fn_restart_m "$process"
-            else
-                echo "Config file either does not exist or is empty, exiting the process"
-                echo "Read README.md and try again....."
+            echo
+            read -rn1 -p "Select a mode of notification, Type Y for Email/N for Slack: " notification
+
+            if [[ "$notification" != [YyNn] ]]; then
+                echo "Invalid input. Exiting the process."
                 exit
             fi
+            fn_restart_y "$process"
+
         else
             if [ "$response" == "N" ] || [ "$response" == "n" ]; then
                 echo "You have opted out for notification"
@@ -47,7 +39,7 @@ fn_running() {
 fn_restart_n() {
     for attempts in $(seq 1 $Max_Attempts); do
         echo "Attempting to restart the process '$process' (Attempt $attempts of $Max_Attempts)..."
-        systemctl restart "$process"
+        sudo systemctl restart "$process"
         sleep $Sleep
         if systemctl is-active --quiet "$process"; then
             echo "The process '$process' has been restarted successfully."
@@ -58,10 +50,10 @@ fn_restart_n() {
     echo "Failed to restart the process '$process' after $Max_Attempts attempts."
 }
 
-fn_restart_m() {
+fn_restart_y() {
     for attempts in $(seq 1 $Max_Attempts); do
         echo "Attempting to restart the process '$process' (Attempt $attempts of $Max_Attempts)..."
-        systemctl restart "$process"
+        sudo systemctl restart "$process"
         sleep $Sleep
         if systemctl is-active --quiet "$process"; then
             echo "The process '$process' has been restarted successfully."
@@ -71,9 +63,9 @@ fn_restart_m() {
 
     echo "Failed to restart the process '$process' after $Max_Attempts attempts."
     echo "Sending Notification To Your Choosen Mode"
-    if [ "$email" -eq "0" ]; then
+    if [ "$notification" == "Y" ] || [ "$notification" == "y" ]; then
         fn_notify_m "$process"
-    elif [ "$slack" -eq "0" ]; then
+    elif [ "$notification" == "N" ] || [ "$notification" == "n" ]; then
         fn_notify_s "$process"
     fi
 }
@@ -98,11 +90,8 @@ EOF
 }
 
 fn_notify_s() {
-
-    message="Alert: The process '$process' requires manual intervention after $Max_Attempts restart attempts."
-
     # Sending the message to Slack using curl
-    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$WEBHOOK_URL"
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$slack\"}" "$Webhook"
 }
 
 # Check if at least one target process name is provided as a command-line argument

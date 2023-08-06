@@ -1,0 +1,15 @@
+process="$1"
+Max_Attempts="3"
+Sleep="5"
+Webhook="https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX"
+slack="Alert: The process '$process' requires manual intervention after $Max_Attempts restart attempts."
+# Email settings
+recipient="recipient@example.com"
+subject="Subject of the email"
+body="Body of the email"
+
+# Google SMTP server settings
+smtp_server="smtp.gmail.com"
+smtp_port="587"
+username="your_email@gmail.com"
+password="your_app_password"
