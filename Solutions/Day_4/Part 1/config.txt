@@ -17,8 +17,7 @@ subject="Subject of the email"
 body="Body of the email"
 
 # Construct the email content
-mail="$(
-    cat <<EOF
+mail="$(cat <<EOF
 From: $username
 To: $recipient
 Subject: $subject
