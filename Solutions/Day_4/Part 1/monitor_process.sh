@@ -25,7 +25,6 @@ check() {
 }
 
 # Check for required commands
-check wget
 check curl
 
 # Check if the config file exists and source it, or download the default config
@@ -34,7 +33,7 @@ if [ -s "config.txt" ]; then
     . config.txt || error "Failed to source config.txt"
 else
     echo "Config file not found or empty, a default one will be downloaded..."
-    if wget -q "https://github.com/HarshitBhatt043/BashBlaze-7-Days-of-Bash-Scripting-Challenge/blob/main/Solutions/Day_4/Part%201/config.txt"; then
+    if curl -s "https://raw.githubusercontent.com/HarshitBhatt043/BashBlaze-7-Days-of-Bash-Scripting-Challenge/main/Solutions/Day_4/Part%201/config.txt" > config.txt; then
         echo "Default config file downloaded"
         . config.txt || error "Failed to source config.txt"
     else
