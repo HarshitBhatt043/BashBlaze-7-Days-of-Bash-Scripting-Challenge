@@ -34,7 +34,7 @@ if [ -s "config.txt" ]; then
     . config.txt || error "Failed to source config.txt"
 else
     echo "Config file not found or empty, a default one will be downloaded..."
-    if wget -q "https://github.com/HarshitBhatt043/BashBlaze-7-Days-of-Bash-Scripting-Challenge/blob/monitoring-feature/Solutions/Day_4/Part%201/config.txt"; then
+    if wget -q "https://github.com/HarshitBhatt043/BashBlaze-7-Days-of-Bash-Scripting-Challenge/blob/main/Solutions/Day_4/Part%201/config.txt"; then
         echo "Default config file downloaded"
         . config.txt || error "Failed to source config.txt"
     else
