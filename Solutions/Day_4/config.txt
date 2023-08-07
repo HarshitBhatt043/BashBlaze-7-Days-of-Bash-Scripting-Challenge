@@ -1,12 +1,32 @@
+# The name of the target process to monitor and restart
 process="$1"
+
+# Maximum number of restart attempts for the process
 Max_Attempts="3"
+
+# Time to sleep between restart attempts (in seconds)
 Sleep="5"
+
+# Slack integration settings
 Webhook="https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX"
 slack="Alert: The process '$process' requires manual intervention after $Max_Attempts restart attempts."
+
 # Email settings
 recipient="recipient@example.com"
 subject="Subject of the email"
 body="Body of the email"
+
+# Construct the email content
+mail="$(
+    cat <<EOF
+From: $username
+To: $recipient
+Subject: $subject
+Content-Type: text/plain; charset=utf-8
+
+$body
+EOF
+)"
 
 # Google SMTP server settings
 smtp_server="smtp.gmail.com"
