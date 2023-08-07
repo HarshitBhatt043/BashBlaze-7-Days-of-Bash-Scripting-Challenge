@@ -47,11 +47,12 @@ fn_running() {
         echo "The process '$process' is running."
     else
         echo "The process '$process' is not running, It will be restarted but you need to give some information below"
-        read -p "Do you want notification if the restarting of process $process failed? Type Y for yes/N for no: " response
+        read -rn1 -p "Do you want notification if the restarting of process $process failed? Type Y for yes/N for no: " response
         if [ "$response" == "Y" ] || [ "$response" == "y" ]; then
             echo "You have opted in for notification"
             echo
             read -rn1 -p "Select a mode of notification, Type Y for Email/N for Slack: " notification
+            echo
 
             if [[ "$notification" != [YyNn] ]]; then
                 echo "Invalid input. Exiting the process."
